@@ -13,7 +13,7 @@ function VideoList({ title, query, onShowMore}: VideoListProps) {
 
     const {data, isLoading, error, refetch} = useSearchVideosQuery({
         query,
-        maxResults: 4,
+        maxResults: 6,
     });
 
     const handleVideoPress = (videoId: string) => {

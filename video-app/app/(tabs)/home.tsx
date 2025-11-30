@@ -21,17 +21,6 @@ function HomePage() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.searhcBox}>
-        <Pressable onPress={handleSearch}>
-          <SearchSvg width={100} />
-          <Text>Search videos</Text>
-        </Pressable>
-        <Pressable>
-          <SettingSvg width={100} />
-        </Pressable>
-      </View>
-
-
       <ScrollView style={styles.scrollView} showsHorizontalScrollIndicator={false}>
         {CATEGORIES.map((category) => (
           <VideoList key={category.id} title={category.name} query={category.query} onShowMore={() => handleShowMore(category.id)}/>
@@ -45,14 +34,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
-  },
-  searhcBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingTop: 16,
-    gap: 12,
-    paddingBottom: 16,
-    justifyContent: 'space-around',
   },
   scrollView: {
     flex: 1,
