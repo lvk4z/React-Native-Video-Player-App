@@ -1,14 +1,42 @@
-import { StyleSheet } from 'react-native';
-
-import EditScreenInfo from '@/components/EditScreenInfo';
+import { Pressable, StyleSheet, ScrollView } from 'react-native';
 import { Text, View } from '@/components/Themed';
 
-export default function TabOneScreen() {
+import VideoList from '@/components/VideoList';
+import { useRouter } from 'expo-router';
+
+import SearchSvg from '@/assets/icons/search-icon.svg';
+import SettingSvg from '@/assets/icons/settings-icon.svg';
+import { CATEGORIES } from '@/store/services/youtubeApi';
+
+function HomePage() {
+  const router = useRouter();
+
+  const handleSearch = () => {
+    router.push('/search');
+  };
+
+  const handleShowMore = (categoryId: string) => {
+    router.push(`/search?category=${categoryId}`);
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="app/(tabs)/index.tsx" />
+      <View style={styles.searhcBox}>
+        <Pressable onPress={handleSearch}>
+          <SearchSvg width={100} />
+          <Text>Search videos</Text>
+        </Pressable>
+        <Pressable>
+          <SettingSvg width={100} />
+        </Pressable>
+      </View>
+
+
+      <ScrollView style={styles.scrollView} showsHorizontalScrollIndicator={false}>
+        {CATEGORIES.map((category) => (
+          <VideoList key={category.id} title={category.name} query={category.query} onShowMore={() => handleShowMore(category.id)}/>
+        ))}
+      </ScrollView>
     </View>
   );
 }
@@ -16,16 +44,19 @@ export default function TabOneScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  searhcBox: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    paddingTop: 16,
+    gap: 12,
+    paddingBottom: 16,
+    justifyContent: 'space-around',
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
+  scrollView: {
+    flex: 1,
+  }
 });
+
+export default HomePage;
