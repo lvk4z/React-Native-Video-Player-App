@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import VideoCard from '@/components/VideoCard';
 import SearchHeader from '@/components/SearchHeader';
-import { useLazySearchVideosQuery, YoutubeVideo, YoutubeSearchResponse } from '@/store/services/youtubeApi';
+import { useLazySearchVideosQuery } from '@/store/services/youtubeApi';
 
 export default function Search() {
   const router = useRouter();
@@ -23,7 +23,7 @@ export default function Search() {
   }, [query, triggerSearch]);
 
   const handleVideoPress = (videoId: string) => {
-    router.push(`/details`)
+    router.push(`/video/${videoId}`)
   };
 
   const handleSortPress = () => {

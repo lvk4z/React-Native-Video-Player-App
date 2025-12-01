@@ -38,14 +38,48 @@ export interface YoutubeSearchResponse {
     };
     items: YoutubeVideo[];
 }
-
-export interface VideoCategory {
+export interface YouTubeVideoDetails {
+  kind: string;
+  etag: string;
+  items: Array<{
+    kind: string;
+    etag: string;
     id: string;
-    name: string;
-    query: string;
+    snippet: {
+      publishedAt: string;
+      channelId: string;
+      title: string;
+      description: string;
+      thumbnails: {
+        default: { url: string; width: number; height: number };
+        medium: { url: string; width: number; height: number };
+        high: { url: string; width: number; height: number };
+      };
+      channelTitle: string;
+      tags?: string[];
+      categoryId: string;
+      liveBroadcastContent: string;
+      localized: {
+        title: string;
+        description: string;
+      };
+    };
+    contentDetails: {
+      duration: string;
+      dimension: string;
+      definition: string;
+      caption: string;
+    };
+    statistics: {
+      viewCount: string;
+      likeCount: string;
+      favoriteCount: string;
+      commentCount: string;
+    };
+  }>;
 }
 
-export const CATEGORIES: VideoCategory[] = [
+export const CATEGORIES = [
   { 
     id: 'react-native', 
     name: 'React Native', 
@@ -95,13 +129,13 @@ export const youtubeApi = createApi({
             }),
         }),
 
-        getDetails: builder.query<any, string[]>({
-            query: (videoIds) => ({
+        getDetails: builder.query<any, string>({
+            query: (videoId) => ({
                 url: '/videos',
                 params: {
-                key: API_KEY,
-                id: videoIds.join(','),
-                part: 'snippet,contentDetails,statistics',
+                    key: API_KEY,
+                    id: videoId,
+                    part: 'snippet,contentDetails,statistics',
                 },
             }),
         }),

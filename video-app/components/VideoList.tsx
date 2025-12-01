@@ -17,7 +17,7 @@ function VideoList({ title, query, onShowMore}: VideoListProps) {
     });
 
     const handleVideoPress = (videoId: string) => {
-        router.push(`/details?videoId=${videoId}`);
+        router.push(`/video/${videoId}`);
     };
 
     if (error) {
