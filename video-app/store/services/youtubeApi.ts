@@ -95,32 +95,6 @@ export const youtubeApi = createApi({
             }),
         }),
 
-        searchVideosByCategory: builder.query<YoutubeSearchResponse, {
-            categoryId: string;
-            maxResults?: number;
-            pageToken?: string;
-        }>({
-            query: ({ categoryId, maxResults=10, pageToken }) => {
-                const category = CATEGORIES.find(cat => cat.id === categoryId);
-                const searchQuery = category?.query || 'pragramming tutorial';
-
-                return {
-                    url: '/search',
-                    params: {
-                        key: API_KEY,
-                        q: searchQuery,
-                        part: 'snippet',
-                        type: 'video',
-                        maxResults,
-                        pageToken,
-                        order: 'relevance',
-                        videoEmbeddable: true,
-                        safeSearch: 'moderate',
-                    },
-                };
-            }
-        }),
-
         getDetails: builder.query<any, string[]>({
             query: (videoIds) => ({
                 url: '/videos',
@@ -136,8 +110,6 @@ export const youtubeApi = createApi({
 
 export const {
     useSearchVideosQuery,
-    useSearchVideosByCategoryQuery,
     useGetDetailsQuery,
     useLazySearchVideosQuery,
-    useLazySearchVideosByCategoryQuery,
 } = youtubeApi;

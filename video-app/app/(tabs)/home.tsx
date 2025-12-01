@@ -1,19 +1,12 @@
-import { Pressable, StyleSheet, ScrollView } from 'react-native';
-import { Text, View } from '@/components/Themed';
+import { StyleSheet, ScrollView } from 'react-native';
+import { View } from '@/components/Themed';
 
 import VideoList from '@/components/VideoList';
 import { useRouter } from 'expo-router';
-
-import SearchSvg from '@/assets/icons/search-icon.svg';
-import SettingSvg from '@/assets/icons/settings-icon.svg';
 import { CATEGORIES } from '@/store/services/youtubeApi';
 
 function HomePage() {
   const router = useRouter();
-
-  const handleSearch = () => {
-    router.push('/search');
-  };
 
   const handleShowMore = (categoryId: string) => {
     router.push(`/search?category=${categoryId}`);
