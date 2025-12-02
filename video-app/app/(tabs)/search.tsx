@@ -3,7 +3,6 @@ import {
   View,
   Text,
   FlatList,
-  Pressable,
   ActivityIndicator,
 } from "react-native";
 import { useEffect, useState } from "react";
@@ -12,6 +11,7 @@ import VideoCard from "@/components/VideoCard";
 import SearchHeader from "@/components/SearchHeader";
 import { useLazySearchVideosQuery } from "@/store/services/youtubeApi";
 import SortModal, { SortOption } from "@/components/SortModal";
+import { PText } from "@/components/StyledText";
 
 export default function Search() {
   const router = useRouter();
@@ -94,7 +94,7 @@ export default function Search() {
     const msg = "Error during search";
     return (
       <View style={styles.container}>
-        <Text style={styles.errorMsg}>{msg}</Text>
+        <PText style={styles.errorMsg}>{msg}</PText>
       </View>
     );
   }

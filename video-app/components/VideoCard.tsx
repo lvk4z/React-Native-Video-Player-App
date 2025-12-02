@@ -1,12 +1,13 @@
 import {
   View,
-  Text,
   Image,
   StyleSheet,
   TouchableOpacity,
   Dimensions,
+  Text,
 } from "react-native";
 import { YoutubeVideo } from "@/store/services/youtubeApi";
+import { PText } from '@/components/StyledText'
 
 interface VideoCardProps {
   video: YoutubeVideo;
@@ -31,10 +32,10 @@ function VideoCard({ video, onPress }: VideoCardProps) {
             source={{ uri: video.snippet.thumbnails.medium.url }}
         />
         <View style={styles.detailsBox}>
-            <Text style={styles.title} numberOfLines={1}>{video.snippet.channelTitle}</Text>
+            <PText style={styles.title} numberOfLines={1}>{video.snippet.channelTitle}</PText>
             <View style={styles.descriptionBox}>
-                <Text style={styles.description} numberOfLines={2}>{video.snippet.description}</Text>
-                <Text style={styles.dateLabel}>{publishedAt}</Text>
+                <PText style={styles.description} numberOfLines={2}>{video.snippet.description}</PText>
+                <PText style={styles.dateLabel}>{publishedAt}</PText>
             </View>
         </View>
 

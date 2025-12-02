@@ -1,124 +1,16 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { 
-    View, Text, StyleSheet, ScrollView, ActivityIndicator, 
+    View, StyleSheet, ScrollView, ActivityIndicator, 
     TextInput, Pressable 
 } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Video, { VideoRef, OnProgressData, OnLoadData } from 'react-native-video';
 import { useGetDetailsQuery } from '@/store/services/youtubeApi';
-import BackwardIcon from '@/assets/icons/backward-icon.svg';
-import VolumeIcon from '@/assets/icons/volume-icon.svg';
-import AirplayIcon from '@/assets/icons/airplay-icon.svg';
-import PlayIcon from '@/assets/icons/play-icon.svg';
-import ForwardIcon from '@/assets/icons/forward-icon.svg';
-import FullscreenIcon from '@/assets/icons/fullscreen-icon.svg';
 import LikesIcon from '@/assets/icons/likes-icon.svg';
 import ViewsIcon from '@/assets/icons/views-icon.svg';
 import PersonIcon from '@/assets/icons/person-icon.svg';
-import LetfArrowIcon from '@/assets/icons/leftarrow-icon.svg';
-
-const videoFile = require('@/assets/video/broadchurch.mp4');
-
-const VideoPlayer = () => {
-    const router = useRouter();
-    const videoRef = useRef<VideoRef>(null);
-    const [paused, setPaused] = useState(true);
-    const [progress, setProgress] = useState<OnProgressData>({
-        currentTime: 0,
-        playableDuration: 0,
-        seekableDuration: 0,
-    });
-    const [duration, setDuration] = useState(0);
-    const [isBuffering, setIsBuffering] = useState(false);
-
-    const formatTime = (seconds: number) => {
-        const mins = Math.floor(seconds / 60);
-        const secs = Math.floor(seconds % 60);
-        return `${mins}:${secs.toString().padStart(2, '0')}`;
-    };
-
-    const handleProgress = (data: OnProgressData) => {
-        setProgress(data);
-    };
-
-    const handleLoad = (data: OnLoadData) => {
-        setDuration(data.duration);
-        setIsBuffering(false);
-    };
-
-    const togglePlayPause = () => {
-        setPaused(!paused);
-    };
-
-    return (
-        <View style={styles.playerContainer}>
-            <Video
-                ref={videoRef}
-                source={videoFile}
-                style={styles.video}
-                paused={paused}
-                onProgress={handleProgress}
-                onLoad={handleLoad}
-                onBuffer={({ isBuffering }) => setIsBuffering(isBuffering)}
-                onError={(error) => console.error('Video Error:', error)}
-            />
-            <View style={styles.playerHeader}>
-                <Pressable 
-                    style={styles.headerButton}
-                    onPress={() => router.back()}
-                >
-                    <LetfArrowIcon />
-                </Pressable>
-                <View style={styles.headerRight}>
-                    <Pressable style={styles.headerButton}>
-                        <VolumeIcon />
-                    </Pressable>
-                    <Pressable style={styles.headerButton}>
-                        <AirplayIcon />
-                    </Pressable>
-                </View>
-            </View>
-
-            <Pressable 
-                style={styles.playPauseOverlay}
-                onPress={togglePlayPause}
-            >
-                {paused && (
-                    <View style={styles.playPanel}>
-                        <BackwardIcon />
-                        <PlayIcon />
-                        <ForwardIcon />
-                    </View>
-                )}
-            </Pressable>
-
-            {isBuffering && (
-                <View style={styles.bufferingContainer}>
-                    <ActivityIndicator size="large" />
-                </View>
-            )}
-
-            <View style={styles.progressBar}>
-                <Text style={styles.progressTime}>
-                    {formatTime(progress.currentTime)} / {formatTime(duration)}
-                </Text>
-                <View style={styles.progressTrack}>
-                    <View 
-                        style={[
-                            styles.progressFill, 
-                            { width: `${(progress.currentTime / duration) * 100}%` }
-                        ]} 
-                    />
-                </View>
-                <Pressable style={styles.fullscreenButton}>
-                    <FullscreenIcon />
-                </Pressable>
-            </View>
-        </View>
-    );
-};
-
+import { PText } from '@/components/StyledText';
+import VideoPlayer from '@/components/VideoPlayer';
 interface Note {
     id: string;
     text: string;
@@ -129,7 +21,7 @@ interface NotesData {
     [videoId: string]: Note[];
 }
 
-export default function VideoDetailsScreen() {
+function VideoDetailsScreen() {
     const { videoId } = useLocalSearchParams<{ videoId: string }>();
     
     const [activeTab, setActiveTab] = useState<'details' | 'notes'>('details');
@@ -198,13 +90,13 @@ export default function VideoDetailsScreen() {
             <VideoPlayer />
 
             <ScrollView style={styles.scrollContent}>
-                <Text style={styles.title}>{details.snippet.title}</Text>
+                <PText style={styles.title}>{details.snippet.title}</PText>
                 
                 <View style={styles.channelBox}>
                     <View style={styles.channelAvatar}>
                         <PersonIcon color={'#FFF'} width={20} />
                     </View>
-                    <Text style={styles.channelName}>{details.snippet.channelTitle}</Text>
+                    <PText style={styles.channelName}>{details.snippet.channelTitle}</PText>
                 </View>
 
                 <View style={styles.tabs}>
@@ -212,40 +104,40 @@ export default function VideoDetailsScreen() {
                         style={[styles.tab, activeTab === 'details' && styles.tabActive]}
                         onPress={() => setActiveTab('details')}
                     >
-                        <Text style={styles.tabText}>
+                        <PText style={styles.tabText}>
                             Details
-                        </Text>
+                        </PText>
                     </Pressable>
                     <Pressable 
                         style={[styles.tab, activeTab === 'notes' && styles.tabActive]}
                         onPress={() => setActiveTab('notes')}
                     >
-                        <Text style={styles.tabText}>
+                        <PText style={styles.tabText}>
                             Notes
-                        </Text>
+                        </PText>
                     </Pressable>
                 </View>
 
                 {activeTab === 'details' ? (
                     <View style={styles.detailsContent}>
-                        <Text style={styles.sectionTitle}>Description</Text>
-                        <Text style={styles.description}>{details.snippet.description}</Text>
+                        <PText style={styles.sectionTitle}>Description</PText>
+                        <PText style={styles.description}>{details.snippet.description}</PText>
 
                         {details.statistics && (
                             <View>
-                                <Text style={styles.sectionTitle}>Statistics</Text>
+                                <PText style={styles.sectionTitle}>Statistics</PText>
                                 <View style={styles.statsGrid}>
                                     <View style={styles.statItem}>
                                         <ViewsIcon width={32} stroke={'#FFFFFF'}/>
-                                        <Text style={styles.statValue}>
+                                        <PText style={styles.statValue}>
                                             {parseInt(details.statistics.viewCount).toLocaleString()} views
-                                        </Text>
+                                        </PText>
                                     </View>
                                     <View style={styles.statItem}>
                                         <LikesIcon width={32}/>
-                                        <Text style={styles.statValue}>
+                                        <PText style={styles.statValue}>
                                             {parseInt(details.statistics.likeCount).toLocaleString()} likes
-                                        </Text>
+                                        </PText>
                                     </View>
                                 </View>
                             </View>
@@ -255,8 +147,8 @@ export default function VideoDetailsScreen() {
                     <View style={styles.notesContent}>
                         {notes.map((note) => (
                             <View key={note.id} style={styles.noteCard}>
-                                <Text style={styles.noteText}>{note.text}</Text>
-                                <Text style={styles.noteTimestamp}>{note.timestamp}</Text>
+                                <PText style={styles.noteText}>{note.text}</PText>
+                                <PText style={styles.noteTimestamp}>{note.timestamp}</PText>
                             </View>
                         ))}
 
@@ -273,7 +165,7 @@ export default function VideoDetailsScreen() {
                                 style={styles.addNoteButton}
                                 onPress={addNote}
                             >
-                                <Text style={styles.addNoteButtonText}>Add note</Text>
+                                <PText style={styles.addNoteButtonText}>Add note</PText>
                             </Pressable>
                         </View>
                     </View>
@@ -288,106 +180,13 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#FFFFFF',
     },
-    centerContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 20,
-        backgroundColor: '#FFFFFF',
-    },
-    playerContainer: {
-        width: '100%',
-        height: 280,
-        backgroundColor: '#000000',
-        position: 'relative',
-    },
-    video: {
-        width: '100%',
-        height: '100%',
-    },
-    playerHeader: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: 12,
-    },
-    headerButton: {
-        width: 36,
-        height: 36,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#000000',
-        opacity: 25,
-        borderRadius: 16,
-    },
-    headerRight: {
-        flexDirection: 'row',
-        gap: 8,
-    },
-    playPauseOverlay: {
-        ...StyleSheet.absoluteFillObject,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    playPanel: {
-        flexDirection: 'row',
-        gap: 40,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    bufferingContainer: {
-        ...StyleSheet.absoluteFillObject,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0,0,0,0.5)',
-    },
-    progressBar: {
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        gap: 8,
-        backgroundColor: 'rgba(0,0,0,0.5)',
-    },
-    progressTime: {
-        color: '#FFFFFF',
-        fontSize: 12,
-        minWidth: 80,
-    },
-    progressTrack: {
-        flex: 1,
-        height: 4,
-        backgroundColor: 'rgba(255,255,255,0.5)',
-        borderRadius: 2,
-    },
-    progressFill: {
-        height: '100%',
-        backgroundColor: '#C71F1F',
-        borderRadius: 2,
-    },
-    fullscreenButton: {
-        width: 32,
-        height: 32,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    fullscreenIcon: {
-        fontSize: 18,
-        color: '#FFFFFF',
-    },
+
     scrollContent: {
         flex: 1,
         paddingHorizontal: 26,
         paddingVertical: 12,
     },
+
     title: {
         fontSize: 18,
         fontWeight: '600',
@@ -395,11 +194,13 @@ const styles = StyleSheet.create({
         color: '#2B2D42',
         lineHeight: 12,
     },
+
     channelBox: {
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 5,
     },
+
     channelAvatar: {
         width: 48,
         height: 48,
@@ -410,15 +211,13 @@ const styles = StyleSheet.create({
         marginRight: 12,
         color: '#FFFFFF'
     },
-    avatarIcon: {
-        color: '#FFFFFF'
-    },
+
     channelName: {
         fontWeight: '600',
         color: '#2B2D42',
         fontSize: 14,
     },
-    
+
     tabs: {
         flexDirection: 'row',
         borderBottomWidth: 1,
@@ -426,42 +225,49 @@ const styles = StyleSheet.create({
         borderColor: '#2B2D42',
         marginBottom: 20,
     },
+
     tab: {
-        paddingVertical: 5, 
+        paddingVertical: 5,
         width: '50%',
         alignItems: 'center',
     },
+
     tabActive: {
         borderBottomWidth: 2,
         borderBottomColor: '#2B2D42',
     },
+
     tabText: {
         fontSize: 12,
         color: '#2B2D42',
         fontWeight: '500',
     },
+
     detailsContent: {
         paddingBottom: 40,
     },
+
     sectionTitle: {
         fontSize: 10,
         fontWeight: '700',
         marginBottom: 8,
         color: '#2B2D42',
         lineHeight: 12,
-
     },
+
     description: {
         lineHeight: 12,
         color: '#2B2D42',
         fontSize: 12,
         marginBottom: 14,
     },
+
     statsGrid: {
         flexDirection: 'row',
         justifyContent: 'space-around',
         gap: 20,
     },
+
     statItem: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -471,14 +277,17 @@ const styles = StyleSheet.create({
         gap: 8,
         color: '#FFFFFF',
     },
+
     statValue: {
         fontSize: 10,
         color: '#FFFFFF',
         fontWeight: '500',
     },
+
     notesContent: {
         paddingBottom: 40,
     },
+
     noteCard: {
         padding: 16,
         borderRadius: 8,
@@ -486,21 +295,25 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#E0E0E0',
     },
+
     noteText: {
         fontSize: 12,
         color: '#2B2D42',
         lineHeight: 12,
         marginBottom: 8,
     },
+
     noteTimestamp: {
         fontSize: 12,
         color: '#999999',
         textAlign: 'right',
     },
+
     addNoteContainer: {
         marginTop: 70,
         alignItems: 'center',
     },
+
     noteInput: {
         borderRadius: 8,
         borderWidth: 1,
@@ -513,6 +326,7 @@ const styles = StyleSheet.create({
         marginBottom: 12,
         width: '100%',
     },
+
     addNoteButton: {
         backgroundColor: '#2B2D42',
         paddingVertical: 14,
@@ -520,9 +334,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         width: '70%',
     },
+
     addNoteButtonText: {
         color: '#FFFFFF',
         fontSize: 16,
         fontWeight: '600',
     },
 });
+
+export default VideoDetailsScreen;

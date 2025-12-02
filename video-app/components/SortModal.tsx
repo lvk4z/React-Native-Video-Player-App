@@ -1,4 +1,5 @@
 import { StyleSheet, View, Text, Pressable, Modal } from "react-native";
+import { PText } from "@/components/StyledText";
 
 export type SortOption = "date" | "date-oldest" | "rating";
 
@@ -9,7 +10,7 @@ interface SortModalProps {
   onSelectSort: (sort: SortOption) => void;
 }
 
-export default function SortModal({
+function SortModal({
   visible,
   onClose,
   selectedSort,
@@ -31,11 +32,9 @@ export default function SortModal({
         <View style={styles.modalContainer}>
           <Pressable onPress={(e) => e.stopPropagation()}>
             <View style={styles.modalContent}>
-              <Text style={styles.title}>Sort records by:</Text>
+              <PText style={styles.title}>Sort records by:</PText>
 
-              {/* Sort Options */}
               <View style={styles.optionsContainer}>
-                {/* Latest */}
                 <Pressable
                   style={styles.option}
                   onPress={() => handleSelect("date")}
@@ -50,10 +49,9 @@ export default function SortModal({
                       <View style={styles.radioDot} />
                     )}
                   </View>
-                  <Text style={styles.optionText}>Upload date: latest</Text>
+                  <PText style={styles.optionText}>Upload date: latest</PText>
                 </Pressable>
 
-                {/* Oldest */}
                 <Pressable
                   style={styles.option}
                   onPress={() => handleSelect("date-oldest")}
@@ -68,10 +66,8 @@ export default function SortModal({
                       <View style={styles.radioDot} />
                     )}
                   </View>
-                  <Text style={styles.optionText}>Upload date: oldest</Text>
+                  <PText style={styles.optionText}>Upload date: oldest</PText>
                 </Pressable>
-
-                {/* Most Popular */}
                 <Pressable
                   style={styles.option}
                   onPress={() => handleSelect("rating")}
@@ -86,13 +82,12 @@ export default function SortModal({
                       <View style={styles.radioDot} />
                     )}
                   </View>
-                  <Text style={styles.optionText}>Most popular</Text>
+                  <PText style={styles.optionText}>Most popular</PText>
                 </Pressable>
               </View>
 
-              {/* Confirm Button */}
               <Pressable style={styles.confirmButton} onPress={onClose}>
-                <Text style={styles.confirmButtonText}>Confirm</Text>
+                <PText style={styles.confirmButtonText}>Confirm</PText>
               </Pressable>
             </View>
           </Pressable>
@@ -169,3 +164,5 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 });
+
+export default SortModal;

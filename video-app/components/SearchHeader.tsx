@@ -1,4 +1,5 @@
 import { View, StyleSheet, Text, Pressable } from 'react-native'
+import { PText } from '@/components/StyledText'
 
 interface SearchHeaderProps {
     count: number;
@@ -10,14 +11,14 @@ interface SearchHeaderProps {
 function SearchHeader ({ count, query, onSort, sortText }: SearchHeaderProps) {
     return (
         <View style={styles.container}>
-            <Text style={styles.result}>{count} results found for: 
-                <Text style={styles.boldTextLabel}>{query}</Text>
-            </Text>
+            <PText style={styles.result}>{count} results found for: 
+                <PText style={styles.boldTextLabel}>{query}</PText>
+            </PText>
 
             <Pressable onPress={onSort} style={styles.sortButton}>
-                <Text style={styles.sortLabel}>Sort by:
-                    <Text style={styles.boldTextLabel}>{sortText}</Text>
-                </Text>
+                <PText style={styles.sortLabel}>Sort by:
+                    <PText style={styles.boldTextLabel}>{sortText}</PText>
+                </PText>
             </Pressable>
         </View>
     );

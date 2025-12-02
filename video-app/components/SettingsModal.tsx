@@ -6,6 +6,7 @@ import LetfArrowIcon from "@/assets/icons/leftarrow-icon.svg";
 import NotificationsIcon from "@/assets/icons/notification-icon.svg";
 import ClockIcon from "@/assets/icons/clock-icon.svg";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { PText } from "@/components/StyledText";
 
 function SettingsModal() {
   const router = useRouter();
@@ -19,14 +20,14 @@ function SettingsModal() {
         <Pressable style={styles.backButton} onPress={() => router.back()}>
           <LetfArrowIcon />
         </Pressable>
-        <Text style={styles.headerTitle}>Settings</Text>
+        <PText style={styles.headerTitle}>Settings</PText>
       </View>
 
       <View style={styles.profileSection}>
         <View style={styles.avatar}>
           <PersonIcon />
         </View>
-        <Text style={styles.userName}>John Doe</Text>
+        <PText style={styles.userName}>John Doe</PText>
       </View>
 
       <View style={styles.divider} />
@@ -34,14 +35,14 @@ function SettingsModal() {
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <NotificationsIcon />
-          <Text style={styles.sectionTitle}>Learning reminders</Text>
+          <PText style={styles.sectionTitle}>Learning reminders</PText>
         </View>
 
         <View style={styles.reminderRow}>
-          <Text style={styles.reminderLabel}>Repeat everyday at</Text>
+          <PText style={styles.reminderLabel}>Repeat everyday at</PText>
           <View style={styles.timeContainer}>
             <ClockIcon />
-            <Text style={styles.timeText}>{reminderTime}</Text>
+            <PText style={styles.timeText}>{reminderTime}</PText>
           </View>
           <Switch
             value={notificationsEnabled}
@@ -51,9 +52,9 @@ function SettingsModal() {
             style={styles.switch}
           />
         </View>
-        <Text style={styles.description}>
+        <PText style={styles.description}>
           You will receive friendly reminder to remember to study
-        </Text>
+        </PText>
       </View>
     </View>
   );
