@@ -1,7 +1,8 @@
-import { View, Text, Pressable, StyleSheet, Image } from 'react-native';
+import { View, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import LogoSvg from '@/assets/logo.svg';
 import AppIcon from '@/assets/app-icon.svg';
+import { PText } from '@/components/StyledText'
 
 
 function LoginScreen() {
@@ -22,17 +23,17 @@ function LoginScreen() {
             </View>
 
             <View style={styles.bottomBox}>
-                <Text style={styles.subtitle}>Welcome to the best YouTube-based learning application.</Text>
+                <PText style={styles.subtitle}>Welcome to the best YouTube-based learning application.</PText>
 
                 <Pressable
                     onPress={handleLogin}
                     style={styles.loginButton}
                 >
-                    <Text style={styles.loginButtonLabel}>Log in as a Guest</Text>
+                    <PText style={styles.loginButtonLabel}>Log in as a Guest</PText>
                 </Pressable>
 
-                <View style={styles.linksBox}>
-                    <Text style={styles.links}>By continuing you agree with Terms and Conditions and Privacy Policy</Text>
+                <View>
+                    <PText style={styles.links}>By continuing you agree with <PText style={styles.boldLinks}>Terms and Conditions</PText> and <PText style={styles.boldLinks}>Privacy Policy</PText></PText>
                 </View>
             </View>
         </View>
@@ -65,8 +66,9 @@ const styles = StyleSheet.create({
         gap: 20,
     },
     subtitle: {
-        fontSize: 26,
+        fontSize: 22,
         color: '#FFFFFF',
+        lineHeight: 24,
     },
     loginButton: {
         backgroundColor: '#2B2D42',
@@ -79,13 +81,16 @@ const styles = StyleSheet.create({
         fontSize: 18,
         textAlign: 'center',
     },
-    linksBox: {
-        alignItems: 'center',
-    },
     links: {
         color: '#FFFFFF',
-        fontSize: 16,
+        fontSize: 13,
+        textAlign: 'center',
+        lineHeight: 16,
     },
+    boldLinks: {
+        color: '#2B2D42',
+        textDecorationColor: '#2B2D42'
+    }
 
 })
 
