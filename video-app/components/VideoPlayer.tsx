@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import Video, { VideoRef, OnProgressData, OnLoadData } from 'react-native-video';
+import * as ScreenOrientation from 'expo-screen-orientation';
 import BackwardIcon from '@/assets/icons/backward-icon.svg';
 import VolumeIcon from '@/assets/icons/volume-icon.svg';
 import AirplayIcon from '@/assets/icons/airplay-icon.svg';
@@ -14,12 +15,12 @@ import FullscreenIcon from '@/assets/icons/fullscreen-icon.svg';
 import LetfArrowIcon from '@/assets/icons/leftarrow-icon.svg';
 import { PText } from '@/components/StyledText';
 
-const videoFile = require('@/assets/video/broadchurch.mp4');
-
-const VideoPlayer = () => {
+const VideoPlayer = ({ uri }: { uri: string }) => {
     const router = useRouter();
     const videoRef = useRef<VideoRef>(null);
+
     const [paused, setPaused] = useState(true);
+    const [muted, setMuted] = useState(false);
     const [progress, setProgress] = useState<OnProgressData>({
         currentTime: 0,
         playableDuration: 0,
@@ -27,50 +28,52 @@ const VideoPlayer = () => {
     });
     const [duration, setDuration] = useState(0);
     const [isBuffering, setIsBuffering] = useState(false);
+    const [trackWidth, setTrackWidth] = useState(0);
 
-    const formatTime = (seconds: number) => {
-        const mins = Math.floor(seconds / 60);
-        const secs = Math.floor(seconds % 60);
-        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    const formatTime = (s: number) => {
+        const m = Math.floor(s / 60);
+        const sec = Math.floor(s % 60);
+        return `${m}:${sec.toString().padStart(2, '0')}`;
     };
 
-    const handleProgress = (data: OnProgressData) => {
-        setProgress(data);
-    };
+    const togglePlayPause = () => setPaused(prev => !prev);
+    const rewind10 = () => videoRef.current?.seek(progress.currentTime - 10);
+    const forward10 = () => videoRef.current?.seek(progress.currentTime + 10);
+    const toggleMute = () => setMuted(prev => !prev);
 
-    const handleLoad = (data: OnLoadData) => {
-        setDuration(data.duration);
-        setIsBuffering(false);
-    };
-
-    const togglePlayPause = () => {
-        setPaused(!paused);
+    const toggleFullscreen = async () => {
+        await ScreenOrientation.lockAsync(
+            ScreenOrientation.OrientationLock.LANDSCAPE
+        );
     };
 
     return (
         <View style={styles.playerContainer}>
             <Video
                 ref={videoRef}
-                source={videoFile}
+                source={{ uri: 'https://bitmovin-a.akamaihd.net/content/sintel/hls/playlist.m3u8' }}
                 style={styles.video}
                 paused={paused}
-                onProgress={handleProgress}
-                onLoad={handleLoad}
+                muted={muted}
+                resizeMode="contain"
+                onProgress={setProgress}
+                onLoad={(data) => setDuration(data.duration)}
                 onBuffer={({ isBuffering }) => setIsBuffering(isBuffering)}
-                onError={(error) => console.error('Video Error:', error)}
+                onError={(e) => console.log("Video error:", e)}
             />
+
             <View style={styles.playerHeader}>
                 <Pressable 
-                    style={styles.headerButton}
+                    style={styles.iconCircleSmall}
                     onPress={() => router.back()}
                 >
                     <LetfArrowIcon />
                 </Pressable>
                 <View style={styles.headerRight}>
-                    <Pressable style={styles.headerButton}>
+                    <Pressable style={styles.iconCircleSmall} onPress={toggleMute}>
                         <VolumeIcon />
                     </Pressable>
-                    <Pressable style={styles.headerButton}>
+                    <Pressable style={styles.iconCircleSmall}>
                         <AirplayIcon />
                     </Pressable>
                 </View>
@@ -82,9 +85,17 @@ const VideoPlayer = () => {
             >
                 {paused && (
                     <View style={styles.playPanel}>
-                        <BackwardIcon />
-                        <PlayIcon />
-                        <ForwardIcon />
+                        <Pressable onPress={rewind10} style={styles.iconCircle}>
+                            <BackwardIcon />
+                        </Pressable>
+                        
+                        <Pressable onPress={togglePlayPause} style={styles.iconCircle}>
+                            <PlayIcon />
+                        </Pressable>
+                        
+                        <Pressable onPress={forward10} style={styles.iconCircle}>
+                            <ForwardIcon />
+                        </Pressable>
                     </View>
                 )}
             </Pressable>
@@ -99,15 +110,25 @@ const VideoPlayer = () => {
                 <PText style={styles.progressTime}>
                     {formatTime(progress.currentTime)} / {formatTime(duration)}
                 </PText>
-                <View style={styles.progressTrack}>
+
+                <Pressable
+                    style={styles.progressTrack}
+                    onPress={(e) => {
+                        const x = e.nativeEvent.locationX;
+                        const seekTo = (x / trackWidth) * duration;
+                        videoRef.current?.seek(seekTo);
+                    }}
+                    onLayout={(e) => setTrackWidth(e.nativeEvent.layout.width)}
+                >
                     <View 
                         style={[
-                            styles.progressFill, 
+                            styles.progressFill,
                             { width: `${(progress.currentTime / duration) * 100}%` }
                         ]} 
                     />
-                </View>
-                <Pressable style={styles.fullscreenButton}>
+                </Pressable>
+
+                <Pressable style={styles.fullscreenButton} onPress={toggleFullscreen}>
                     <FullscreenIcon />
                 </Pressable>
             </View>
@@ -115,12 +136,11 @@ const VideoPlayer = () => {
     );
 };
 
-
 const styles = StyleSheet.create({
     playerContainer: {
         width: '100%',
         height: 280,
-        backgroundColor: '#000000',
+        backgroundColor: '#000',
         position: 'relative',
     },
     video: {
@@ -129,6 +149,7 @@ const styles = StyleSheet.create({
     },
     playerHeader: {
         position: 'absolute',
+        zIndex: 20,
         top: 0,
         left: 0,
         right: 0,
@@ -137,23 +158,31 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 12,
     },
-    headerButton: {
-        width: 36,
-        height: 36,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#000000',
-        opacity: 25,
-        borderRadius: 16,
-    },
     headerRight: {
         flexDirection: 'row',
         gap: 8,
+    },
+    iconCircle: {
+        width: 48,
+        height: 48,
+        borderRadius: 48,
+        backgroundColor: 'rgba(0,0,0,0.4)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    iconCircleSmall: {
+        width: 36,
+        height: 36,
+        borderRadius: 36,
+        backgroundColor: 'rgba(0,0,0,0.4)',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     playPauseOverlay: {
         ...StyleSheet.absoluteFillObject,
         justifyContent: 'center',
         alignItems: 'center',
+        zIndex: 5,
     },
     playPanel: {
         flexDirection: 'row',
@@ -180,7 +209,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0,0,0,0.5)',
     },
     progressTime: {
-        color: '#FFFFFF',
+        color: '#FFF',
         fontSize: 12,
         minWidth: 80,
     },
@@ -201,11 +230,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    fullscreenIcon: {
-        fontSize: 18,
-        color: '#FFFFFF',
-    },
 });
-
 
 export default VideoPlayer;
